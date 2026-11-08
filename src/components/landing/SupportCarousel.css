@@ -1,0 +1,197 @@
+.supportCarousel {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- Swiper ---------- */
+
+.supportCarousel .swiper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.supportCarousel .swiper-slide {
+  display: flex;
+}
+
+/* ---------- Карточка ---------- */
+
+.supportCard {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0) 22%
+    ),
+    linear-gradient(180deg, #141414 0%, #090909 100%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.44),
+    0 2px 6px rgba(255, 98, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -14px 22px rgba(0, 0, 0, 0.32);
+}
+
+.supportCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ---------- Верхняя часть ---------- */
+
+.supportImage {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.supportVideo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: #000;
+}
+
+.supportMedia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.supportMediaVideo {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: contain;
+  object-position: center;
+
+  background: #000;
+}
+
+.supportPlaceholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ---------- Нижняя часть ---------- */
+
+.supportContent {
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: flex-start;
+
+  padding: 24px;
+
+  background: transparent;
+}
+
+.supportTitle {
+  margin: 0;
+
+  font-weight: 700;
+  line-height: 1.18;
+  color: #fff;
+
+  /* Адаптивный размер */
+  font-size: clamp(20px, 5vw, 26px);
+
+  /* Максимум 3 строки */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.supportDescription {
+  margin-top: 14px;
+
+  font-size: clamp(13px, 3.2vw, 15px);
+  line-height: 1.6;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  overflow-wrap: break-word;
+}
+
+/* ---------- Pagination ---------- */
+
+.supportCarousel .swiper-pagination {
+  position: static;
+  margin-top: 20px;
+}
+
+.supportCarousel .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+
+  margin: 0 6px !important;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.22);
+
+  opacity: 1;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.supportCarousel .swiper-pagination-bullet-active {
+  background: #ff6200;
+  transform: scale(1.25);
+}

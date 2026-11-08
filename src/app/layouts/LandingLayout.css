@@ -1,0 +1,95 @@
+/* ==========================
+   LANDING VARIABLES
+========================== */
+
+:root {
+  --landing-safe-top-gap: 4px;
+  --landing-safe-bottom-gap: 6px;
+  --landing-side-gap: 10px;
+}
+
+/* ==========================
+   LANDING SHELL
+========================== */
+
+.landing-shell {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: flex;
+  justify-content: center;
+
+  background: linear-gradient(
+    180deg,
+    #050505 0%,
+    #060606 6%,
+    #070707 12%,
+    #080808 22%,
+    #080808 78%,
+    #070707 88%,
+    #060606 94%,
+    #050505 100%
+  );
+
+  box-sizing: border-box;
+
+  padding-top: calc(env(safe-area-inset-top) + var(--landing-safe-top-gap));
+
+  padding-right: max(var(--landing-side-gap), env(safe-area-inset-right));
+
+  padding-bottom: max(
+    var(--landing-safe-bottom-gap),
+    env(safe-area-inset-bottom)
+  );
+
+  padding-left: max(var(--landing-side-gap), env(safe-area-inset-left));
+}
+
+/* ==========================
+   LANDING PAGE
+========================== */
+
+.landing-page {
+  width: 100%;
+  max-width: 480px;
+
+  min-height: calc(
+    100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) -
+      var(--landing-safe-top-gap) - var(--landing-safe-bottom-gap)
+  );
+
+  margin: 0 auto;
+
+  background: transparent;
+
+  box-sizing: border-box;
+
+  padding: 22px;
+
+  border: 2px solid transparent;
+  border-radius: 32px;
+
+  animation: borderGlow 1s ease forwards;
+  animation-delay: 2s;
+
+  box-shadow: none;
+}
+
+/* ==========================
+   ANIMATIONS
+========================== */
+
+@keyframes borderGlow {
+  from {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  to {
+    border-color: #ff6200;
+    box-shadow:
+      0 0 12px rgba(255, 98, 0, 0.7),
+      0 0 35px rgba(255, 98, 0, 0.15);
+  }
+}
