@@ -1170,12 +1170,12 @@ section {
 
 .pricingBottom {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-
-  gap: 16px;
-
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 8px;
+  min-width: 0;
 }
 
 .pricingPrice {
@@ -1187,7 +1187,7 @@ section {
 
   white-space: nowrap;
 
-  width: 100%;
+  width: auto;
 }
 
 .pricingPeriod {
@@ -1214,21 +1214,32 @@ section {
   }
 }
 
-@media (max-width: 350px) {
+@media (max-width: 500px) {
   .pricingBottom {
     flex-direction: column;
     align-items: stretch;
+    gap: 14px;
+  }
+
+  .pricingPrice {
+    width: 100%;
   }
 
   .pricingButton {
     width: 100%;
+    box-sizing: border-box;
   }
 }
 
 .pricingButton {
-  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  padding: 11px 20px;
+  flex-shrink: 0;
+  width: auto;
+
+  padding: 12px 18px;
 
   border: none;
   border-radius: 14px;
@@ -1236,8 +1247,9 @@ section {
   background: linear-gradient(90deg, #c71d2a, #ff6200);
 
   color: #fff;
+  text-decoration: none;
 
-  font-size: clamp(14px, 3.8vw, 15px);
+  font-size: 14px;
   font-weight: 700;
 
   cursor: pointer;
@@ -1269,4 +1281,143 @@ section {
   text-align: center;
   font-size: clamp(14px, 2vw, 16px);
   line-height: 1.6;
+}
+
+/* ==========================
+   ГАЛЕРЕЯ СТРАНИЦ ГАЙДА
+========================== */
+
+.pricingGallery {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  margin: 24px auto;
+}
+
+.pricingGalleryItem {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1191 / 1684;
+  height: auto;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 98, 0, 0.5);
+  border-radius: 8px;
+  background: #080808;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.pricingGalleryItem:hover {
+  transform: translateY(-4px);
+  border-color: #ff6200;
+}
+
+.pricingGalleryItem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ==========================
+   ПОЛНОЭКРАННЫЙ ПРОСМОТР
+========================== */
+
+.pricingLightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 55px 55px 65px;
+
+  background: rgba(0, 0, 0, 0.96);
+
+  cursor: zoom-out;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pricingLightboxImage {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  max-width: 100%;
+  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 120px);
+
+  object-fit: contain;
+
+  cursor: default;
+  pointer-events: auto;
+}
+
+.pricingLightboxClose {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  z-index: 2;
+
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  background: transparent;
+
+  color: #fff;
+  font-size: 40px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.pricingLightboxCounter {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "Comfortaa", sans-serif;
+  font-size: 14px;
+}
+
+/* ==========================
+   МОБИЛЬНЫЕ УСТРОЙСТВА
+========================== */
+
+@media (max-width: 500px) {
+  .pricingGallery {
+    gap: 6px;
+  }
+
+  .pricingGalleryItem {
+    border-radius: 6px;
+  }
+
+  .pricingLightbox {
+    padding: 48px 38px 60px;
+  }
+
+  .pricingLightboxImage {
+    max-width: 100%;
+    max-height: calc(100vh - 108px);
+    max-height: calc(100dvh - 108px);
+  }
+
+  .pricingLightboxClose {
+    top: 5px;
+    right: 8px;
+  }
 }

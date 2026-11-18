@@ -24,12 +24,9 @@ function HomeContent() {
           </div>
         </Reveal>
 
-        <Reveal delay={250}>
-          <p className="faithText">Иисус Христос — Господь и Спаситель</p>
-        </Reveal>
-
+        
         <Reveal>
-          <h2 className="sectionTitle">Как проходит сопровождение</h2>
+          <h2 className="sectionTitle">Что входит в сопровождение</h2>
         </Reveal>
 
         <Reveal delay={150}>
