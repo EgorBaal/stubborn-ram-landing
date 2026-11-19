@@ -1,9 +1,14 @@
 ﻿import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export default function Pricing() {
   const [openCard, setOpenCard] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
+  const [scale, setScale] = useState(1);
+
   const touchStartX = useRef(null);
+  const pinchStartDistance = useRef(null);
+  const pinchStartScale = useRef(1);
 
   const plans = [
     {
@@ -54,66 +59,143 @@ export default function Pricing() {
         (current + direction + galleryImages.length) % galleryImages.length
       );
     });
+
+    setScale(1);
+    touchStartX.current = null;
+    pinchStartDistance.current = null;
   };
 
-  // Блокировка прокрутки фона и управление клавиатурой
+  // Блокировка прокрутки страницы и управление клавиатурой
   useEffect(() => {
-    if (activeImage === null) return;
+  if (activeImage === null) return;
 
-    const body = document.body;
-    const html = document.documentElement;
+  const body = document.body;
+  const html = document.documentElement;
 
-    const previousBodyOverflow = body.style.overflow;
-    const previousHtmlOverflow = html.style.overflow;
+  const scrollY = window.scrollY;
 
-    body.style.overflow = "hidden";
-    html.style.overflow = "hidden";
+  const previousBodyPosition = body.style.position;
+  const previousBodyTop = body.style.top;
+  const previousBodyWidth = body.style.width;
+  const previousBodyOverflow = body.style.overflow;
+  const previousHtmlOverflow = html.style.overflow;
 
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        setActiveImage(null);
-      }
+  body.style.position = "fixed";
+  body.style.top = `-${scrollY}px`;
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+  html.style.overflow = "hidden";
 
-      if (event.key === "ArrowRight") {
-        setActiveImage((current) =>
-          current === null ? null : (current + 1) % galleryImages.length,
-        );
-      }
+  const handleKeyDown = (event) => {
+    if (event.key === "Escape") {
+      setActiveImage(null);
+    }
 
-      if (event.key === "ArrowLeft") {
-        setActiveImage((current) =>
-          current === null
-            ? null
-            : (current - 1 + galleryImages.length) % galleryImages.length,
-        );
-      }
-    };
+    if (event.key === "ArrowRight") {
+      changeImage(1);
+    }
 
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      body.style.overflow = previousBodyOverflow;
-      html.style.overflow = previousHtmlOverflow;
-    };
-  }, [activeImage, galleryImages.length]);
-
-  // Начало свайпа
-  const handleTouchStart = (event) => {
-    touchStartX.current = event.touches[0].clientX;
+    if (event.key === "ArrowLeft") {
+      changeImage(-1);
+    }
   };
 
-  // Завершение свайпа
-  const handleTouchEnd = (event) => {
-    if (touchStartX.current === null) return;
+  window.addEventListener("keydown", handleKeyDown);
 
-    const difference = event.changedTouches[0].clientX - touchStartX.current;
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+
+    body.style.position = previousBodyPosition;
+    body.style.top = previousBodyTop;
+    body.style.width = previousBodyWidth;
+    body.style.overflow = previousBodyOverflow;
+    html.style.overflow = previousHtmlOverflow;
+
+    window.scrollTo({
+      top: scrollY,
+      left: 0,
+      behavior: "instant",
+    });
+  };
+}, [activeImage]);
+
+  // Расстояние между двумя пальцами
+  const getTouchDistance = (touches) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // Начало касания
+  const handleTouchStart = (event) => {
+    if (event.touches.length === 2) {
+      touchStartX.current = null;
+      pinchStartDistance.current = getTouchDistance(event.touches);
+      pinchStartScale.current = scale;
+      return;
+    }
+
+    if (event.touches.length === 1 && scale <= 1.01) {
+      touchStartX.current = event.touches[0].clientX;
+    }
+  };
+
+  // Приближение и отдаление щипком
+  const handleTouchMove = (event) => {
+    if (event.touches.length === 2 && pinchStartDistance.current !== null) {
+      event.preventDefault();
+
+      const currentDistance = getTouchDistance(event.touches);
+      const ratio = currentDistance / pinchStartDistance.current;
+
+      const nextScale = Math.min(
+        4,
+        Math.max(1, pinchStartScale.current * ratio),
+      );
+
+      setScale(nextScale);
+    }
+  };
+
+  // Завершение касания: переключение страниц свайпом
+  const handleTouchEnd = (event) => {
+    if (pinchStartDistance.current !== null) {
+      pinchStartDistance.current = null;
+      touchStartX.current = null;
+      return;
+    }
+
+    if (touchStartX.current === null || scale > 1.01) {
+      touchStartX.current = null;
+      return;
+    }
+
+    const changedTouch = event.changedTouches[0];
+
+    if (!changedTouch) {
+      touchStartX.current = null;
+      return;
+    }
+
+    const difference = changedTouch.clientX - touchStartX.current;
 
     if (Math.abs(difference) > 50) {
       changeImage(difference < 0 ? 1 : -1);
     }
 
     touchStartX.current = null;
+  };
+
+  // Масштабирование колёсиком мыши
+  const handleWheel = (event) => {
+    event.preventDefault();
+
+    const step = event.deltaY < 0 ? 0.15 : -0.15;
+
+    setScale((current) =>
+      Math.min(4, Math.max(1, current + step)),
+    );
   };
 
   return (
@@ -125,7 +207,9 @@ export default function Pricing() {
           <div
             key={index}
             className={`pricingCard ${openCard === index ? "open" : ""}`}
-            onClick={() => setOpenCard(openCard === index ? null : index)}
+            onClick={() =>
+              setOpenCard(openCard === index ? null : index)
+            }
           >
             <div className="pricingHeader">
               <h3>{plan.title}</h3>
@@ -157,10 +241,16 @@ export default function Pricing() {
                         key={i}
                         type="button"
                         className="pricingGalleryItem"
-                        onClick={() => setActiveImage(i)}
+                        onClick={() => {
+                          setScale(1);
+                          setActiveImage(i);
+                        }}
                         aria-label={`Открыть страницу ${i + 1}`}
                       >
-                        <img src={src} alt={`Страница гайда ${i + 1}`} />
+                        <img
+                          src={src}
+                          alt={`Страница гайда ${i + 1}`}
+                        />
                       </button>
                     ))}
                   </div>
@@ -170,7 +260,9 @@ export default function Pricing() {
                   <div className="pricingPrice">
                     {plan.price}
                     {plan.period && (
-                      <span className="pricingPeriod">{plan.period}</span>
+                      <span className="pricingPeriod">
+                        {plan.period}
+                      </span>
                     )}
                   </div>
 
@@ -190,35 +282,42 @@ export default function Pricing() {
         ))}
       </div>
 
-      {activeImage !== null && (
-        <div
-          className="pricingLightbox"
-          onClick={() => setActiveImage(null)}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          <button
-            type="button"
-            className="pricingLightboxClose"
+      {activeImage !== null &&
+        createPortal(
+          <div
+            className="pricingLightbox"
             onClick={() => setActiveImage(null)}
-            aria-label="Закрыть просмотр"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onWheel={handleWheel}
           >
-            ×
-          </button>
+            <button
+              type="button"
+              className="pricingLightboxClose"
+              onClick={() => setActiveImage(null)}
+              aria-label="Закрыть просмотр"
+            >
+              ×
+            </button>
 
-          <img
-            className="pricingLightboxImage"
-            src={galleryImages[activeImage]}
-            alt={`Страница гайда ${activeImage + 1}`}
-            onClick={(event) => event.stopPropagation()}
-            draggable="false"
-          />
+            <img
+              className="pricingLightboxImage"
+              src={galleryImages[activeImage]}
+              alt={`Страница гайда ${activeImage + 1}`}
+              style={{
+                transform: `scale(${scale})`,
+              }}
+              onClick={(event) => event.stopPropagation()}
+              draggable="false"
+            />
 
-          <div className="pricingLightboxCounter">
-            {activeImage + 1} / {galleryImages.length}
-          </div>
-        </div>
-      )}
+            <div className="pricingLightboxCounter">
+              {activeImage + 1} / {galleryImages.length}
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }
